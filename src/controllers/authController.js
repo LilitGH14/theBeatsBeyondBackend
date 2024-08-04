@@ -1,4 +1,4 @@
-import { query } from "../../db.js";
+import { query } from "../query/query.js"
 
 const table = "users";
 
