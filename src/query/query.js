@@ -1,7 +1,9 @@
 import db from "../db.js";
 
-export const query = (sql, res, selectFirst, callback) => {
-  db.execute(sql, (err, data) => {
+export const query = (sql, values = [], res, selectFirst, callback) => {
+  const _sql = values?.length ? [sql, values] : [sql];
+
+  db.execute(..._sql, (err, data) => {
     if (err) {
       return res.json({ message: err });
     } else {

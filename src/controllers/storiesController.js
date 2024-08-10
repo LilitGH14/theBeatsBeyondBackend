@@ -1,52 +1,61 @@
 import { query } from "../query/query.js";
 import { splitTags } from "../query/queryHelpers.js";
-
-const storiesTable = "stories";
-const usersTable = "users";
+import TABLES from "../config/tables.js";
 
 const getStories = (req, res) => {
   const sql = `
-  SELECT ${storiesTable}.*, ${usersTable}.username FROM ${storiesTable} 
-  LEFT JOIN ${usersTable} 
-  ON ${storiesTable}.userId = ${usersTable}.id
+    SELECT ${TABLES.STORIES}.*, ${TABLES.USERS}.username 
+    FROM ${TABLES.STORIES} 
+    LEFT JOIN ${TABLES.USERS} 
+    ON ${TABLES.STORIES}.userId = ${TABLES.USERS}.id
   `;
 
-  query(sql, res, false);
+  query(sql, null, res, false);
 };
 
 const getStory = (req, res) => {
   const { id } = req.params;
-  const sql = `SELECT * FROM ${storiesTable} WHERE id=${id}`;
 
-  query(sql, res, true, splitTags);
+  const sql = `SELECT * FROM ${TABLES.STORIES} WHERE id=?`;
+
+  query(sql, [id], res, true, splitTags);
 };
 
 const addStory = (req, res) => {
   const { title, tags, description, singers, writers } = req.body;
-  const sql = `
-  INSERT INTO ${storiesTable} 
- (userId, title, tags, description, singers, writers) 
-  VALUES (1, ${title}, ${null}, ${description}, ${null}, ${null}) `;
 
-  query(sql, res, true);
+  //check validation
+  // if (!userId || !title || !description) {
+  //   return res.status(400).json({ error: 'userId, title, and description are required' });
+  // }
+
+  const sql =
+    "INSERT INTO stories (userId, title, tags, description, singers, writers) VALUES (?, ?, ?, ?, ?, ?)";
+  const values = [1, title, tags, description, singers, writers];
+
+  query(sql, values, res, true);
 };
 
 const deleteStory = (req, res) => {
   const { id } = req.params;
-  const sql = `DELETE * FROM ${storiesTable} WHERE id=${id}`;
+
+  const sql = `DELETE * FROM ${TABLES.STORIES} WHERE id=${id}`;
 
   query(sql, res, true);
 };
 
 const updateStory = (req, res) => {
-  const { userId, title, tags, description, votedCount, isInspired } =
-    req.params;
-  const sql = `
-  UPDATE ${storiesTable} 
-  SET userId=${userId}, title=${title}, tags=${tags}, description=${description}, votedCount=${votedCount}, isInspired=${isInspired}
-  WHERE id=${id}`;
+  const { id } = req.params;
+  const { userId, title, tags, description, singers, writers } = req.body;
 
-  query(sql, res, true);
+  const sql = `
+    UPDATE stories 
+    SET userId = ?, title = ?, tags = ?, description = ?, singers = ?, writers = ? 
+    WHERE id = ?
+  `;
+  const values = [userId, title, tags, description, singers, writers, id];
+
+  query(sql, values, res, true);
 };
 
 export { getStories, getStory, addStory, deleteStory, updateStory };

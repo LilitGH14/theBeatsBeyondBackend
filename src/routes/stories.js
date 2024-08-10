@@ -6,13 +6,14 @@ import {
   deleteStory,
   updateStory,
 } from "../controllers/storiesController.js";
+import ROUTES from "../config/routes.js";
 
 const router = Router();
 
-router.get("/", getStories);
-router.get("/:id", getStory);
-router.post("/create", addStory);
-router.delete("/delete", deleteStory);
-router.put("/update", updateStory);
+router.get(ROUTES.STORIES[1].DEFAULT, getStories);
+router.get(ROUTES.STORIES[1].DETAILS, getStory);
+router.post(ROUTES.STORIES[1].CREATE, addStory);
+router.delete(ROUTES.STORIES[1].DELETE, deleteStory);
+router.put(ROUTES.STORIES[1].UPDATE, updateStory);
 
 export default router;
